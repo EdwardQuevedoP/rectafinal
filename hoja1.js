@@ -3,7 +3,7 @@ const { Pool } = require('pg');
 const app = express()
 const port = process.env.PORT||3000;
 app.use(express.json())
-// require('dotenv').config()
+require('dotenv').config()
 const swaggerUi = require('swagger-ui-express');
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup());
 const pool = new Pool({
@@ -27,12 +27,14 @@ const apiKEYvalidations = (req,res, next) =>{
 app.use(apiKEYvalidations)
 app.get('/students',(req,res)=>{
     
-    const listUsersQuery = `CREATE TABLE students (
+  /*  const listUsersQuery = `CREATE TABLE students (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(50),
         lastname VARCHAR(50),
         notes TEXT
-    );`;
+    );`;*/
+    const listUsersQuery = `SELECT * FROM students`
+
 pool.query(listUsersQuery)
     .then(res2 => {
         console.log("List students: ", res.rows);
@@ -70,7 +72,7 @@ app.post('/students',(req, res) => {
     .catch(err => {
         console.error(err);
         res.status(400)
-        res.send("hubo un error")
+        res.send("hubo un error2")
     });
     console.log(req.body)
 })
