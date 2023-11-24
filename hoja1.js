@@ -101,3 +101,5 @@ app.delete('/students/:id',(req,res)=>{
         });
 })
 app.listen(port,()=>console.log("el server esta prendido"))
+
+module.exports = app;
