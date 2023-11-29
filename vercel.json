@@ -2,14 +2,14 @@
     "version": 2,
     "builds": [
       {
-        "src": "hoja1.js",
+        "src": "proyecto.js",
         "use": "@now/node"
       }
     ],
     "routes": [
       {
         "src": "/(.*)",
-        "dest": "hoja1.js"
+        "dest": "proyecto.js"
       }
     ]
   }
