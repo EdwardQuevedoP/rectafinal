@@ -12,7 +12,7 @@ const options = {
         }
     },
     apis:[
-        './app.js'
+        './proyecto.js'
     ]
 }
 

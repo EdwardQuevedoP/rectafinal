@@ -37,7 +37,7 @@ app.use(apiKEYvalidations)
 app.use(apiKEYvalidations)
 
 
-/**
+/*
  * @swagger
  * /students:
  *   get:
