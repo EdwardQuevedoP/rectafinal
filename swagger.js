@@ -24,7 +24,7 @@ const swaggerSpec = swaggerJSDOC(options);
 // Si analizan esto es una ruta, un endpoint, se dan cuenta que 
 // recibe una app (la misma d  express) y un puerto (el mismo de la app)
 const swaggerDocs = (app,port)=>{
-    app.use('/doc',swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+    app.use('/api-docs',swaggerUi.serve, swaggerUi.setup(swaggerSpec))
     
 }
 
