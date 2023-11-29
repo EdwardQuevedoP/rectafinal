@@ -34,8 +34,29 @@ const apiKEYvalidations = (req,res, next) =>{
     }
 }
 app.use(apiKEYvalidations)
-app.use(apiKEYvalidations)
 
+app.get('/students',(req,res)=>{
+    
+  /*  const listUsersQuery = `CREATE TABLE students (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(50),
+        lastname VARCHAR(50),
+        notes TEXT
+    );`;*/
+    const listUsersQuery = `SELECT * FROM students`
+
+pool.query(listUsersQuery)
+    .then(res2 => {
+        console.log("List students: ", res.rows);
+    res.send(res2.rows)
+       
+    })
+    .catch(err => {
+        console.error(err);
+        res.status(400)
+        res.send("hubo un error")
+    });
+})
 
 /*
  * @swagger
@@ -64,29 +85,6 @@ app.use(apiKEYvalidations)
  *             example:
  *               error: Hubo un error al procesar la solicitud.
  */
-
-app.get('/students',(req,res)=>{
-    
-  /*  const listUsersQuery = `CREATE TABLE students (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(50),
-        lastname VARCHAR(50),
-        notes TEXT
-    );`;*/
-    const listUsersQuery = `SELECT * FROM students`
-
-pool.query(listUsersQuery)
-    .then(res2 => {
-        console.log("List students: ", res.rows);
-    res.send(res2.rows)
-       
-    })
-    .catch(err => {
-        console.error(err);
-        res.status(400)
-        res.send("hubo un error")
-    });
-})
 
 
 const storage = multer.diskStorage({
@@ -167,7 +165,7 @@ app.delete('/upload/delete/:id', (req, res) => {
 
 
 module.exports = app;
-app.listen(port, () => {
-  console.log(`Servidor iniciado`);
+app.listen(port, function () {
+  console.log(`server in service`);
   v1SwaggerDocs(app, port);
 });
