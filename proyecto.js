@@ -105,7 +105,7 @@ const storage = multer.diskStorage({
   const upload = multer({ storage: storage });
   
   app.post('/upload/:id', upload.single('file'), (req, res) => {
-    const updateQuery = `UPDATE proyecto1 SET photo = '${fotonueva}' WHERE id = '${req.params.id}';`
+    const updateQuery = `UPDATE proyecto1 SET photo = 'edwardQuevedo/${fotonueva}' WHERE id = '${req.params.id}';`
     pool.query(updateQuery)
     .then(data => {
         console.log(res.rows);        
