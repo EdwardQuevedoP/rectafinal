@@ -119,6 +119,20 @@ const storage = multer.diskStorage({
     res.send(updateQuery);
   });
 
+  app.get('/upload/:id', (req, res) => {
+    const { id } = req.params;
+    const getStudentQuery = `SELECT * FROM proyecto1 WHERE id = ${id}`;
+
+    pool.query(getStudentQuery)
+        .then(data => {
+            console.log("proyecto1 by ID: ", data.rows);
+            res.send(data.rows);
+        })
+        .catch(err => {
+            console.error(err);
+            res.status(400).send("Hubo un error");
+        });
+});
 
 app.post('/agregar',(req, res) => {
     const insertar = `INSERT INTO proyecto1 (Project,Data,Name,Notes,Photo,Status) VALUES ('${req.body.project}','${req.body.Data}','${req.body.Name}','${req.body.Notes}','${req.body.Photo}','${req.body.Status}')`;
