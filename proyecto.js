@@ -3,11 +3,9 @@ const { Pool } = require('pg');
 const app = express()
 const multer = require('multer');
 const path = require('path');
+const {swaggerDocs: v1SwaggerDocs} = require('./swagger');
 const port = process.env.PORT||3000;
 
-const swaggerUi = require('swagger-ui-express');
-
-const swaggerJsdoc = require('swagger-jsdoc');
 
 app.use(express.json())
 
@@ -22,38 +20,9 @@ const pool = new Pool({
     port: 5432,
     ssl: {rejectUnauthorized: false}
 });
-// Definir la configuración de Swagger
-const options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Mi API',
-      version: '1.0.0',
-    },
-  },
-  apis: ['proyecto.js'], // Ruta al archivo que contiene las rutas de tu API
-};
-
 
 var fotonueva=''
 
-const specs = swaggerJsdoc(options);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
-
-// Definir tus rutas aquí
-app.get('/', (req, res) => {
-  res.send('hola a todos');
-});
-
-/**
- * @swagger
- * /:
- *   get:
- *     summary: Retorna un saludo
- *     responses:
- *       200:
- *         description: Respuesta exitosa
- */
 const API_KEY = process.env.API_KEY;
 
 const apiKEYvalidations = (req,res, next) =>{
@@ -67,6 +36,34 @@ const apiKEYvalidations = (req,res, next) =>{
 app.use(apiKEYvalidations)
 app.use(apiKEYvalidations)
 
+
+/**
+ * @swagger
+ * /students:
+ *   get:
+ *     summary: Obtener la lista de estudiantes.
+ *     description: Este endpoint devuelve la lista de estudiantes almacenados en la base de datos.
+ *     responses:
+ *       200:
+ *         description: Lista de estudiantes obtenida con éxito.
+ *         content:
+ *           application/json:
+ *             example:
+ *               - id: 1
+ *                 name: Juan
+ *                 lastname: Perez
+ *                 notes: "Buen estudiante"
+ *               - id: 2
+ *                 name: Maria
+ *                 lastname: Rodriguez
+ *                 notes: "Necesita mejorar en matemáticas"
+ *       400:
+ *         description: Error al obtener la lista de estudiantes.
+ *         content:
+ *           application/json:
+ *             example:
+ *               error: Hubo un error al procesar la solicitud.
+ */
 
 app.get('/students',(req,res)=>{
     
@@ -104,7 +101,7 @@ const storage = multer.diskStorage({
   });
   const upload = multer({ storage: storage });
   
-  app.post('/upload/:id', upload.single('file'), (req, res) => {
+  app.post('/upload/photo/:id', upload.single('file'), (req, res) => {
     const updateQuery = `UPDATE proyecto1 SET photo = 'edwardQuevedo/${fotonueva}' WHERE id = '${req.params.id}';`
     pool.query(updateQuery)
     .then(data => {
@@ -119,7 +116,7 @@ const storage = multer.diskStorage({
     res.send(updateQuery);
   });
 
-  app.get('/upload/:id', (req, res) => {
+  app.get('/upload/get/:id', (req, res) => {
     const { id } = req.params;
     const getStudentQuery = `SELECT * FROM proyecto1 WHERE id = ${id}`;
 
@@ -149,20 +146,28 @@ app.post('/agregar',(req, res) => {
     console.log(req.body)
 })
 
-app.put('/actualizar',(req,res)=>{
-  pool.query(updateQuery)
-  .then(data => {
-      console.log(res.rows);        
-      return res.send(data)
-  })
-  .catch(err => {
-      console.error(err);
-      res.status(400)
-      res.send("hubo un error"+err)
-  });
-})
+app.delete('/upload/delete/:id', (req, res) => {
+  const { id } = req.params;
+  const deleteQuery = 'DELETE FROM proyecto1 WHERE id = $1 RETURNING *';
+
+  pool.query(deleteQuery, [id])
+      .then(data => {
+          if (data.rows.length === 0) {
+              res.status(404).send("Record not found");
+          } else {
+              res.json({ message: 'Record deleted successfully', deletedRecord: data.rows[0] });
+          }
+      })
+      .catch(err => {
+          console.error(err);
+          res.status(400).send("Error deleting record");
+      });
+});
 
 
-app.listen(port,()=>console.log("el server esta prendido"))
 
 module.exports = app;
+app.listen(port, () => {
+  console.log(`Servidor iniciado`);
+  v1SwaggerDocs(app, port);
+});
