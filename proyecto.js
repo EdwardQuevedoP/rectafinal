@@ -42,7 +42,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 // Definir tus rutas aquí
 app.get('/', (req, res) => {
-  res.send('Hola, mundo!');
+  res.send('hola a todos');
 });
 
 /**
